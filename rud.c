@@ -1,5 +1,6 @@
 /*
  * standalone program to setup perf subsystem and receive perf data
+ * 2017 Tong Zhang<ztong@vt.edu>
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -97,15 +98,12 @@ void dump(int fd)
 
 void dump2(int fd)
 {
-    fprintf(stderr,"-------------------\n");
-    for(int i=0;i<64;i++)
+    for (int i=0;i<(4096*64/(sizeof(struct pebs_v3)));i++)
     {
-        struct pebs_v3 *p = (struct pebs_v3*)&(((unsigned char*)(aux_pebs))[4096*i]);
-        for(int j=0;j<4096/sizeof(struct pebs_v3);j++)
-        {
-            fprintf(stderr,"TSC:0x%llx, IP:0x%lld\n", p[j].tsc, p[j].v2.v1.ip);
-        }
-        fprintf(stderr,"\n");
+        struct pebs_v3* p =
+            (struct pebs_v3*)
+            &(((unsigned char*)(aux_pebs))[(sizeof(struct pebs_v3))*i]);
+        fprintf(stderr,"TSC:0x%llx, IP:0x%llx\n", p->tsc, p->v2.v1.ip);
     }
 }
 
